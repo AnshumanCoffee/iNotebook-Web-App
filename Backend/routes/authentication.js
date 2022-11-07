@@ -2,6 +2,10 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
 const { body, validationResult } = require("express-validator");
+const bcrypt = require("bcryptjs");
+const jwt = require('jsonwebtoken');
+
+const JWT_SECRET = "Nhimilegapassword";
 
 // Create a user using:  POST "/api/authentication/createuser". No login required.
 router.post(
@@ -20,25 +24,34 @@ router.post(
 
     //Check whether the user is exist with same email already or not.
     try {
-        
-  
-    let user = await User.findOne({ email: req.body.email });
-    if (user) {
-      return res
-        .status(400)
-        .json({ error: "Already have an acount with this eamil" });
-    }
-    user = await User.create({
-      name: req.body.name,
-      email: req.body.email,
-      password: req.body.password,
-    });
+      let user = await User.findOne({ email: req.body.email });
+      if (user) {
+        return res
+          .status(400)
+          .json({ error: "Already have an acount with this eamil" });
+      }
 
-    res.json(user);
-} catch (error) {
-  console.log(error.message);  
-  res.status(500).send("Oops ! There is an internal error")    
-}
+      const salt = await bcrypt.genSalt(10);
+      const secPass = await bcrypt.hash(req.body.password, salt);
+      // Create new user
+      user = await User.create({
+        name: req.body.name,
+        email: req.body.email,
+        password: secPass,
+      });
+      const data = {
+        user: {
+            id: user.id
+        }
+      }
+      const authenticationToken = jwt.sign(data, JWT_SECRET)
+
+    //   res.json(user);
+    res.json({authenticationToken});
+    } catch (error) {
+      console.log(error.message);
+      res.status(500).send("Oops ! There is an internal error");
+    }
   }
 );
 
