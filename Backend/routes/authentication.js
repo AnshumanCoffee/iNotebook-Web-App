@@ -4,10 +4,10 @@ const User = require("../models/User");
 const { body, validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-
+const fetchuser = require("../Middleware/fetchuser")
 const JWT_SECRET = "Nhimilegapassword";
 
-// Create a user using:  POST "/api/authentication/createuser". No login required.
+// Route 1 : Create a user using:  POST "/api/authentication/createuser". No login required.
 router.post(
   "/createuser",
   [
@@ -55,13 +55,13 @@ router.post(
   }
 );
 
-// Authenticate a user using:  POST "/api/authentication/login". No login required.
+//  Route 2 : Authenticate a user using:  POST "/api/authentication/login". No login required.
 
 router.post(
   "/login",
   [
     body("email", "Enter a valid email").isEmail(),
-    body("password", "Password cannot be blank").exists,
+    body("password", "Password cannot be blank").exists(),
   ],
   async (req, res) => {
     //If there are errors then return bad request & errors.
@@ -90,10 +90,23 @@ router.post(
         },
       };
       const authenticationToken = jwt.sign(data, JWT_SECRET);
+      res.json({ authenticationToken });
     } catch (error) {
       console.log(error.message);
       res.status(500).send("Oops ! There is an internal error");
     }
   }
 );
+
+//  Route 3 : Get loggedin user details using:  POST "/api/authentication/getuser".  login required.
+router.post("/getuser", fetchuser, async (req, res) => {
+  try {
+    userid = req.user.id;
+    const user = await User.findById(userid).select("-password");
+    res.send(user)
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).send("Oops ! There is an internal error");
+  }
+});
 module.exports = router;
