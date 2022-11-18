@@ -1,10 +1,10 @@
 import React, { useContext } from "react";
-import noteContext from "../context/notes/noteContext";
+import noteContext from "../context/note/NoteContext";
 
 const Noteitem = (props) => {
   const context = useContext(noteContext);
-  const { deleteNote, editNote } = context;
-  const { notes } = props;
+  const { deleteNote } = context;
+  const { notes, updateNote } = props;
   return (
     <div className="col-md-3">
       <div className="card my-3">
@@ -17,9 +17,12 @@ const Noteitem = (props) => {
                 deleteNote(notes._id);
               }}
             ></i>
-            <i className="fa-solid fa-marker mx-2"  onClick={() => {
-                editNote(notes._id);
-              }}></i>
+            <i
+              className="fa-solid fa-marker mx-2"
+              onClick={()=>{
+                updateNote(notes)
+              }}
+            ></i>
           </div>
 
           <p className="card-text">{notes.description}</p>

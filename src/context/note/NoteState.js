@@ -1,4 +1,4 @@
-import NoteContext from "./noteContext";
+import NoteContext from "./NoteContext";
 import { useState } from "react";
 
 const NoteState = (props) => {
@@ -48,20 +48,17 @@ const NoteState = (props) => {
   const editNote = async (id, title, description, tag) => {
     // console.log("Edited");
     // API Call
-    const response = await fetch(
-      `${host}/api/notes/updatenote/${id}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "authentication-token":
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjM2YjNlYmQzYmE1ODRjNWM4ODNhYzgwIn0sImlhdCI6MTY2Nzk3Mjc5N30.ieMHu8sNNsiFMA8lH_EDWyPLPO17bibqrqHKUPqnBc0",
-        },
-        body: JSON.stringify({ title, description, tag }),
-      }
-    );
+    const response = await fetch(`${host}/api/notes/updatenote/${id}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "authentication-token":
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjM2YjNlYmQzYmE1ODRjNWM4ODNhYzgwIn0sImlhdCI6MTY2Nzk3Mjc5N30.ieMHu8sNNsiFMA8lH_EDWyPLPO17bibqrqHKUPqnBc0",
+      },
+      body: JSON.stringify({ title, description, tag }),
+    });
     const json = response.json();
-    
+
     // Edit logic
     for (let index = 0; index < notes.length; index++) {
       const element = notes[index];
@@ -73,12 +70,21 @@ const NoteState = (props) => {
     }
   };
   // Delete note
-  const deleteNote = (id) => {
-    console.log("deleted");
+  const deleteNote = async (id) => {
     const newNotes = notes.filter((notes) => {
       return notes._id !== id;
     });
     setNotes(newNotes);
+    const response = await fetch(`${host}/api/notes/deletenote/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        "authentication-token":
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjM2YjNlYmQzYmE1ODRjNWM4ODNhYzgwIn0sImlhdCI6MTY2Nzk3Mjc5N30.ieMHu8sNNsiFMA8lH_EDWyPLPO17bibqrqHKUPqnBc0",
+      },
+    });
+    const json = response.json();
+    console.log(json);
   };
   return (
     <NoteContext.Provider
