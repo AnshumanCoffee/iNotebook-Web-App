@@ -1,11 +1,11 @@
-import noteContext from "../context/notes/noteContext";
+import noteContext from "../context/note/NoteContext";
 import React, { useContext, useState } from "react";
 
 const AddNote = () => {
   const context = useContext(noteContext);
   const { addNote } = context;
 
-  const [notes, setNotes] = useState({
+  const [note, setNote] = useState({
     title: "",
     description: "",
     tag: "default",
@@ -13,10 +13,10 @@ const AddNote = () => {
   const handleClick = (e) => {
     // console.log("Clicked")
     e.preventDefault();
-    addNote(notes.title, notes.description, notes.tag,);
+    addNote(note.title, note.description, note.tag,);
   }; 
   const onChange = (e) => {
-    setNotes({...notes, [e.target.name]: e.target.value });
+    setNote({...note, [e.target.name]: e.target.value });
   };
   return (
     <div>
@@ -45,6 +45,18 @@ const AddNote = () => {
               className="form-control"
               id="description"
               name="description"
+              onChange={onChange}
+            />
+          </div>
+          <div className="mb-3">
+            <label htmlFor="exampleInputPassword1" className="form-label">
+              Tag
+            </label>
+            <input
+              type="text"
+              className="form-control"
+              id="tag"
+              name="tag"
               onChange={onChange}
             />
           </div>
